@@ -1,81 +1,152 @@
 import React, {Component} from 'react';
-import {Page, Navbar, Card, CardHeader, CardContent, ContentBlockTitle, FormSwitch, List, ListItem, FormLabel, FormInput, Button, GridCol, GridRow, ContentBlock, ButtonsSegmented} from 'framework7-react';
+import {connect} from 'react-redux';
+import { bindActionCreators } from 'redux'
+import {newGame, updateTempGame} from '../../action_creators';
+import PlayerList from '../player_list';
+import {
+  Page,
+  Navbar,
+  Card,
+  CardHeader,
+  CardContent,
+  ContentBlockTitle,
+  FormSwitch,
+  List,
+  ListItem,
+  FormLabel,
+  FormInput,
+  Button,
+  GridCol,
+  GridRow
+} from 'framework7-react';
+import { lossEstimate } from '../../utils';
 
 const pStyle = {margin: '1em'};
 
-export default class Game extends Component {
-    constructor(props, context) {
-        super(props, context);
+class GameSettings extends Component {
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            birthDate: '2014-04-30',
-            radioSelected: 1
-        };        
-    }
+    const handleGameChange = (event) => {
 
-    render() {
-        return (
-            <Page>
-                <Navbar backLink="Back" title="Forms" sliding />
-                <ContentBlockTitle>Player Names</ContentBlockTitle>
-                <List form>
-                    <ListItem>
-                        <FormLabel>Player 1</FormLabel>
-                        <FormInput type="text" placeholder="Name" />   
-                    </ListItem>
-                    <ListItem>
-                        <FormLabel>Player 2</FormLabel>
-                        <FormInput type="text" placeholder="Name" />
-                    </ListItem>
-                    <ListItem>
-                        <FormLabel>Player 3</FormLabel>
-                        <FormInput type="text" placeholder="Name" />
-                    </ListItem>
-                    <ListItem>
-                        <FormLabel>Player 4</FormLabel>
-                        <FormInput type="text" placeholder="Name" />
-                    </ListItem>
-                </List>
-                <GridRow style={pStyle}>
-                    <GridCol><Button big fill color="green">+</Button></GridCol>
-                    <GridCol><Button big fill color="red">-</Button></GridCol>
-                </GridRow>
+    };
+    this.handleCreateGame = () => {
+      this.props.newGame(this.props.settings);
+    };
 
-                <ContentBlockTitle>Game Rules</ContentBlockTitle>
-                <List form>
-                    <ListItem>
-                        <FormLabel>Starting points</FormLabel>
-                        <FormInput type="text" placeholder="1" />
-                    </ListItem>
-                    <ListItem>
-                        <FormLabel>Dollars per point</FormLabel>
-                        <FormInput type="text" placeholder="1" />
-                    </ListItem>
-                    <ListItem>
-                        <FormLabel>Carry Overs</FormLabel>
-                        <FormSwitch/>
-                    </ListItem>
-                    <ListItem>
-                        <FormLabel>Points per hole</FormLabel>
-                        <FormInput type="text" placeholder="1" />
-                    </ListItem>
-                    <ListItem>
-                        <FormLabel>Doubles on wolf/pig</FormLabel>
-                        <FormSwitch/>
-                    </ListItem>
-                    <ListItem>
-                        <FormLabel>Stays up on carry over</FormLabel>
-                        <FormSwitch/>
-                    </ListItem>
-                </List>
-                <Card>
-                    <CardHeader>Estimated Bad Loss</CardHeader>
-                    <CardContent>$100</CardContent>
-                </Card>
-                <GridRow style={pStyle}>
-                    <GridCol><Button big fill color="green">Create Game</Button></GridCol>
-                </GridRow>
-            </Page>
+    this.handlePlayerRemove = () => {
+      const lastIndex = this.props.settings.playerNames.length - 1;
+      this.props.onGameChange({
+        playerNames: this.props.settings.playerNames.filter((val, index) => index !== lastIndex)
+      });
+    };
+
+    this.handlePlayerAdd = () => {
+      const newArr = this.props.settings.playerNames.slice();
+      newArr.push('');
+      this.props.onGameChange({
+        playerNames: newArr
+      });
+    };
+
+    this.handlePlayerChange = (changeIndex, value) => {
+      this.props.onGameChange({
+        playerNames: this.props.settings.playerNames.map((val, index) => {
+          if (index === changeIndex) {
+            return value;
+          }
+
+          return val;
+        })
+      });
+    };
+
+    this.renderCarryOvers = () => {
+      const { settings } = this.props;
+
+      const items = [
+        (
+          <ListItem key="carryOvers">
+            <FormLabel>Carry Overs</FormLabel>
+            <FormSwitch value={settings.carryOvers}/>
+          </ListItem>
+        )
+      ];
+
+      if (settings.carryOvers) {
+        items.concat(
+          (<ListItem key="pointsPerHole">
+            <FormLabel>Points per hole</FormLabel>
+            <FormInput type="text" placeholder="1"/>
+          </ListItem>),
+          (<ListItem key="staysUpOnCarryOver">
+            <FormLabel>Stays up on carry over</FormLabel>
+            <FormSwitch/>
+          </ListItem>)
         );
-    }
+      }
+
+      return items;
+    };
+  }
+
+  render() {
+    const {settings} = this.props;
+    const estimate = lossEstimate(settings);
+
+    return (
+      <Page>
+        <Navbar backLink="Back" title="Forms" sliding/>
+        <ContentBlockTitle>Player Names</ContentBlockTitle>
+        <PlayerList
+          players={settings.playerNames}
+          onChange={this.handlePlayerChange}
+          onRemove={this.handlePlayerRemove}
+          handleAdd={this.handlePlayerAdd}/>
+
+        <ContentBlockTitle>Game Rules</ContentBlockTitle>
+        <List form>
+          <ListItem key="startingPoints">
+            <FormLabel>Starting points</FormLabel>
+            <FormInput type="text" value={settings.startingPoints}/>
+          </ListItem>
+          <ListItem key="dollarsPerPoint">
+            <FormLabel>Dollars per point</FormLabel>
+            <FormInput type="text" value={settings.startingPoints}/>
+          </ListItem>
+          <ListItem key="doublesOnWolf">
+            <FormLabel>Doubles on wolf/pig</FormLabel>
+            <FormSwitch value={settings.doublesOnWolf}/>
+          </ListItem>
+          {this.renderCarryOvers()}
+        </List>
+        <Card>
+          <CardHeader>Estimated Bad Loss</CardHeader>
+          <CardContent>${estimate}</CardContent>
+        </Card>
+        <GridRow style={pStyle}>
+          <GridCol><Button big fill color="green" onClick={this.handleCreateGame}>Create Game</Button></GridCol>
+        </GridRow>
+      </Page>
+    );
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    settings: state.tempSettings
+  };
 };
+
+const mapDispatchToProps = dispatch => {
+  return bindActionCreators({
+    onSaveGame: newGame,
+    onGameChange: updateTempGame
+  }, dispatch);
+};
+
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(GameSettings)

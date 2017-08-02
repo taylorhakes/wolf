@@ -9,7 +9,9 @@
     "framework7": "^1.5.3",
     "framework7-react": "^0.9.1",
     "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react-dom": "^15.4.2",
+    "react-redux": "^5.0.5",
+    "redux": "^3.7.2"
   },
   "scripts": {
     "start": "react-scripts start",

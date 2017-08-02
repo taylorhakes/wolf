@@ -1,4 +1,4 @@
-function lossEstimate({ staysOnCarryOver, startingPoints, carryOvers, carryOverPoints, dollarsPerPoint }) {
+export function lossEstimate({ staysOnCarryOver, startingPoints, carryOvers, carryOverPoints, dollarsPerPoint }) {
   if (staysOnCarryOver) {
     return ((startingPoints + ((carryOvers ? carryOverPoints : 0) * 9)) * 6) * 2 * dollarsPerPoint;
   } else {

@@ -5,12 +5,15 @@ import {
 	List, ListItem, Views, NavLeft, Link, NavCenter, NavRight, GridRow, GridCol, Button, Popup,
 	LoginScreen, LoginScreenTitle, ListButton, ListLabel, FormLabel, FormInput
 } from 'framework7-react';
+import {connect} from 'react-redux';
+import { bindActionCreators } from 'redux'
 
 import {routes} from '../routes';
+import {initNewGame} from '../action_creators';
 
 
 
-export class MainViews extends Component {
+class Main extends Component {
 	constructor(props) {
 		super(props);
 
@@ -19,15 +22,6 @@ export class MainViews extends Component {
 			editingGame: null,
 			currentGame: null
 		}
-	}
-
-	handleCreateGame() {
-		this.setState({
-			createGame: {
-				players: [],
-				isNew: true
-			}
-		});
 	}
 
 	render() {
@@ -45,7 +39,7 @@ export class MainViews extends Component {
 						<Page>
 							<ContentBlockTitle>Welcome to Wolf</ContentBlockTitle>
 							<ContentBlock inner>
-								<Button onClick={this.handleCreateGame}>Create New Game</Button>
+								<a href="/form/" onClick={this.props.onNewGame}>Create New Game</a>
 							</ContentBlock>
 							<ContentBlockTitle>View Existing Games</ContentBlockTitle>
 							<List>
@@ -54,7 +48,6 @@ export class MainViews extends Component {
 								<ListItem link="/hole/" title="Hole"></ListItem>
 								<ListItem link="/scorecard/" title="Scorecard"></ListItem>
 							</List>
-
 						</Page>
 					</Pages>
 				</View>
@@ -62,15 +55,30 @@ export class MainViews extends Component {
     );
 	}
 }
-
-MainViews.contextTypes = {
+Main.contextTypes = {
 	framework7AppContext: PropTypes.object
 };
+
+const mapStateToProps = (state) => {
+  return {};
+};
+
+const mapDispatchToProps = dispatch => {
+  return bindActionCreators({
+    onNewGame: initNewGame
+  }, dispatch);
+};
+
+
+const MainConnect = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Main);
 
 export const App = () => (	
 	//Change themeType to "material" to use the Material theme
 	<Framework7App themeType="ios" routes={routes}>		
 		<Statusbar />
-		<MainViews />
+		<MainConnect />
 	</Framework7App>  
 );
