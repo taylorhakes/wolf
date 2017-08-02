@@ -1,4 +1,4 @@
 export default (changes) => ({
-  type: 'TEMP_GAME_CHANGE',
+  type: 'UPDATE_TEMP_GAME',
   payload: changes
 });

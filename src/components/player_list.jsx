@@ -15,9 +15,9 @@ export default class PlayerList extends Component {
 
     this.renderPlayers = () => {
       return this.props.players.map((player, index) => (
-        <ListItem key={`${player}-${index}`}>
+        <ListItem key={index}>
           <FormLabel>Player 1</FormLabel>
-          <FormInput type="text" placeholder="Name" value={player}/>
+          <FormInput type="text" placeholder="Name" value={player} onChange={(event) =>this.props.onChange(index, event.target.value)}/>
         </ListItem>
       ));
     };
@@ -28,7 +28,7 @@ export default class PlayerList extends Component {
       }
 
       return (
-        <GridCol><Button big fill color="green" onClick={this.props.onRemove}>+</Button></GridCol>
+        <GridCol><Button big fill color="green" onClick={this.props.onAdd}>+</Button></GridCol>
       );
     };
 

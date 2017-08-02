@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardContent,
   ContentBlockTitle,
-  FormSwitch,
   List,
   ListItem,
   FormLabel,
@@ -19,6 +18,7 @@ import {
   GridCol,
   GridRow
 } from 'framework7-react';
+import Switch from '../switch';
 import { lossEstimate } from '../../utils';
 
 const pStyle = {margin: '1em'};
@@ -27,8 +27,10 @@ class GameSettings extends Component {
   constructor(props) {
     super(props);
 
-    const handleGameChange = (event) => {
-
+    this.handleSettingChange = (field, value) => {
+      this.props.onGameChange({
+        [field]: value
+      });
     };
     this.handleCreateGame = () => {
       this.props.newGame(this.props.settings);
@@ -68,20 +70,23 @@ class GameSettings extends Component {
         (
           <ListItem key="carryOvers">
             <FormLabel>Carry Overs</FormLabel>
-            <FormSwitch value={settings.carryOvers}/>
+            <Switch checked={settings.carryOvers} value={settings.carryOvers}
+                        onChange={(event) => this.handleSettingChange('carryOvers', event.target.checked)}/>
           </ListItem>
         )
       ];
 
       if (settings.carryOvers) {
-        items.concat(
+        items.push(
           (<ListItem key="pointsPerHole">
             <FormLabel>Points per hole</FormLabel>
-            <FormInput type="text" placeholder="1"/>
+            <FormInput type="text" value={settings.pointsPerHole}
+                       onChange={(event) => this.handleSettingChange('pointsPerHole', event.target.value)}/>
           </ListItem>),
           (<ListItem key="staysUpOnCarryOver">
             <FormLabel>Stays up on carry over</FormLabel>
-            <FormSwitch/>
+            <Switch checked={settings.staysUpOnCarryOver}
+                        onChange={(event) => this.handleSettingChange('staysUpOnCarryOver', event.target.checked)}/>
           </ListItem>)
         );
       }
@@ -92,7 +97,7 @@ class GameSettings extends Component {
 
   render() {
     const {settings} = this.props;
-    const estimate = lossEstimate(settings);
+    const estimated = lossEstimate(settings);
 
     return (
       <Page>
@@ -102,27 +107,30 @@ class GameSettings extends Component {
           players={settings.playerNames}
           onChange={this.handlePlayerChange}
           onRemove={this.handlePlayerRemove}
-          handleAdd={this.handlePlayerAdd}/>
+          onAdd={this.handlePlayerAdd}/>
 
         <ContentBlockTitle>Game Rules</ContentBlockTitle>
         <List form>
           <ListItem key="startingPoints">
             <FormLabel>Starting points</FormLabel>
-            <FormInput type="text" value={settings.startingPoints}/>
+            <FormInput type="text" value={settings.startingPoints}
+                       onChange={(event) => this.handleSettingChange('startingPoints', event.target.value)}/>
           </ListItem>
           <ListItem key="dollarsPerPoint">
             <FormLabel>Dollars per point</FormLabel>
-            <FormInput type="text" value={settings.startingPoints}/>
+            <FormInput type="text" value={settings.dollarsPerPoint}
+                       onChange={(event) => this.handleSettingChange('dollarsPerPoint', event.target.value)}/>
           </ListItem>
           <ListItem key="doublesOnWolf">
             <FormLabel>Doubles on wolf/pig</FormLabel>
-            <FormSwitch value={settings.doublesOnWolf}/>
+            <Switch checked={settings.doublesOnWolf}
+                        onChange={(event) => this.handleSettingChange('doublesOnWolf', event.target.checked)}/>
           </ListItem>
           {this.renderCarryOvers()}
         </List>
         <Card>
           <CardHeader>Estimated Bad Loss</CardHeader>
-          <CardContent>${estimate}</CardContent>
+          <CardContent><span>${estimated}</span></CardContent>
         </Card>
         <GridRow style={pStyle}>
           <GridCol><Button big fill color="green" onClick={this.handleCreateGame}>Create Game</Button></GridCol>
