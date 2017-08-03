@@ -171,7 +171,7 @@ class Scorecard extends Component {
             <FormLabel>Pig</FormLabel>
             <Switch
               onChange={this.handlePigChange}
-              value={this.props.game.partners[this.props.selectedHole] ? this.props.game.partners[this.props.selectedHole].pig : false}/>
+              checked={this.props.game.partners[this.props.selectedHole] ? this.props.game.partners[this.props.selectedHole].pig : false}/>
           </ListItem>
         </List>
         <GridRow>
