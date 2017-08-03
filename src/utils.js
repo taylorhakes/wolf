@@ -1,3 +1,95 @@
+export function playerInfo(game, hole) {
+  const players = game.players;
+  const partners = game.partners;
+
+  let points = game.startingPoints;
+  const scores = new Array(players.length).fill(0);
+  for (let i = 0; i < hole; i++) {
+    let lowestScorers = [];
+    let bestScore = null;
+    for (let j = 0; j < players.length; j++) {
+      const holeScore = players[j].scores[i];
+      if (holeScore && (!bestScore ||  holeScore <= bestScore)) {
+        if (!bestScore || holeScore < bestScore) {
+          bestScore = holeScore;
+          lowestScorers = [];
+        }
+        lowestScorers.push(j);
+      }
+    }
+
+    let allInTeam = null;
+    let winner = true;
+    for (let j = 0; j < lowestScorers.length; j++) {
+      if (!partners[i] || !partners[i].length) {
+        winner = false;
+        break;
+      }
+
+      const inTeam = partners[i].indexOf(lowestScorers[j]) >= 0;
+
+      if (allInTeam === null) {
+        allInTeam = inTeam;
+      }
+
+
+      if (inTeam !== allInTeam) {
+        winner = false;
+        break;
+      }
+    }
+
+    if (winner && allInTeam !== null) {
+      const winners = players.map((player, index) => index).filter((index) => {
+        const isWolfPartner = partners[i].indexOf(index) >= 0;
+        return allInTeam === isWolfPartner;
+      });
+
+
+      if (winners.length) {
+        for (let j = 0; j < winners.length; j++) {
+          scores[winners[j]] += partners[i].length == 1 && game.doublesOnWolf ? 2 * points: points;
+        }
+      }
+    }
+
+    if (!winner && game.carryOvers) {
+      points += game.pointsPerHole;
+    } else if (!game.staysUpOnCarryOver) {
+      points = game.startingPoints;
+    }
+  }
+
+
+  let scoreList;
+  if (hole + players.length <= 18) {
+    const firstPlayer = (hole) % players.length;
+    scoreList = [];
+    for (let j = 0; j < players.length; j++) {
+      const pointer = (j + firstPlayer) % players.length;
+      scoreList.push({
+        player: players[pointer],
+        score: scores[pointer]
+      });
+    }
+  } else {
+    scoreList = players.sort().sort((a,b) => {
+      if (a == b) {
+        return 0;
+      }
+
+      return a < b ? -1 : 1;
+    }).map((player, index) => ({
+      player,
+      score: scores[index]
+    }));
+  }
+
+  return scoreList;
+}
+
+
+
 export function lossEstimate({ staysUpOnCarryOver, startingPoints, carryOvers, doublesOnWolf, pointsPerHole,
   dollarsPerPoint, playerNames }) {
   return lossEstimateHoles({

@@ -6,7 +6,8 @@ import {
   FormInput,
   Button,
   GridCol,
-  GridRow
+  GridRow,
+  ContentBlockTitle
 } from 'framework7-react';
 
 export default class PlayerList extends Component {
@@ -16,7 +17,7 @@ export default class PlayerList extends Component {
     this.renderPlayers = () => {
       return this.props.players.map((player, index) => (
         <ListItem key={index}>
-          <FormLabel>Player 1</FormLabel>
+          <FormLabel><span>Player {index + 1}</span></FormLabel>
           <FormInput type="text" placeholder="Name" value={player} onChange={(event) =>this.props.onChange(index, event.target.value)}/>
         </ListItem>
       ));
@@ -46,7 +47,8 @@ export default class PlayerList extends Component {
   render() {
     return (
       <div>
-        <List form>
+        <ContentBlockTitle>Player Names</ContentBlockTitle>
+        <List form style={{marginBottom: 5}}>
           {this.renderPlayers()}
         </List>
         <GridRow>

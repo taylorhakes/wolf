@@ -33,7 +33,7 @@ class GameSettings extends Component {
       });
     };
     this.handleCreateGame = () => {
-      this.props.newGame(this.props.settings);
+      this.props.onSaveGame({...this.props.settings, id: Date.now()});
     };
 
     this.handlePlayerRemove = () => {
@@ -80,7 +80,7 @@ class GameSettings extends Component {
         items.push(
           (<ListItem key="pointsPerHole">
             <FormLabel>Points per hole</FormLabel>
-            <FormInput type="text" value={settings.pointsPerHole}
+            <FormInput type="number" pattern="[0-9\.]*" value={settings.pointsPerHole}
                        onChange={(event) => this.handleSettingChange('pointsPerHole', event.target.value)}/>
           </ListItem>),
           (<ListItem key="staysUpOnCarryOver">
@@ -101,8 +101,7 @@ class GameSettings extends Component {
 
     return (
       <Page>
-        <Navbar backLink="Back" title="Forms" sliding/>
-        <ContentBlockTitle>Player Names</ContentBlockTitle>
+        <Navbar backLink="Back" title="Game Settings" sliding/>
         <PlayerList
           players={settings.playerNames}
           onChange={this.handlePlayerChange}
@@ -113,12 +112,12 @@ class GameSettings extends Component {
         <List form>
           <ListItem key="startingPoints">
             <FormLabel>Starting points</FormLabel>
-            <FormInput type="text" value={settings.startingPoints}
+            <FormInput type="number" pattern="[0-9]*" value={settings.startingPoints}
                        onChange={(event) => this.handleSettingChange('startingPoints', event.target.value)}/>
           </ListItem>
           <ListItem key="dollarsPerPoint">
             <FormLabel>Dollars per point</FormLabel>
-            <FormInput type="text" value={settings.dollarsPerPoint}
+            <FormInput type="number" value={settings.dollarsPerPoint}
                        onChange={(event) => this.handleSettingChange('dollarsPerPoint', event.target.value)}/>
           </ListItem>
           <ListItem key="doublesOnWolf">
@@ -128,12 +127,12 @@ class GameSettings extends Component {
           </ListItem>
           {this.renderCarryOvers()}
         </List>
+        <ContentBlockTitle>Estimate Bad Loss</ContentBlockTitle>
         <Card>
-          <CardHeader>Estimated Bad Loss</CardHeader>
           <CardContent><span>${estimated}</span></CardContent>
         </Card>
         <GridRow style={pStyle}>
-          <GridCol><Button big fill color="green" onClick={this.handleCreateGame}>Create Game</Button></GridCol>
+          <GridCol><Button href="/scorecard/" big fill color="green" onClick={this.handleCreateGame}>Create Game</Button></GridCol>
         </GridRow>
       </Page>
     );
