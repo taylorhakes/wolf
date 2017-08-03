@@ -1,9 +1,23 @@
+function newFilledArray(len, val) {
+  const rv = new Array(len);
+  while (--len >= 0) {
+    if (typeof val === 'function') {
+      rv[len] = val(len);
+    } else {
+      rv[len] = val;
+    }
+
+  }
+  return rv;
+}
+
 export function playerInfo(game, hole) {
   const players = game.players;
   const partners = game.partners;
 
   let points = game.startingPoints;
-  const scores = new Array(players.length).fill(0);
+  const scores = newFilledArray(players.length, 0);
+  const scoresByHole = newFilledArray(players.length, () => []);
   for (let i = 0; i < hole; i++) {
     let lowestScorers = [];
     let bestScore = null;
@@ -48,7 +62,9 @@ export function playerInfo(game, hole) {
 
       if (winners.length) {
         for (let j = 0; j < winners.length; j++) {
-          scores[winners[j]] += partners[i].length == 1 && game.doublesOnWolf ? 2 * points: points;
+          const holeScore = partners[i].length == 1 && game.doublesOnWolf ? 2 * points: points;
+          scoresByHole[winners[j]][i] = holeScore;
+          scores[winners[j]] += holeScore;
         }
       }
     }
@@ -69,7 +85,8 @@ export function playerInfo(game, hole) {
       const pointer = (j + firstPlayer) % players.length;
       scoreList.push({
         player: players[pointer],
-        score: scores[pointer]
+        score: scores[pointer],
+        scoresByHole: scoresByHole[pointer]
       });
     }
   } else {
@@ -81,7 +98,8 @@ export function playerInfo(game, hole) {
       return a < b ? -1 : 1;
     }).map((player, index) => ({
       player,
-      score: scores[index]
+      score: scores[index],
+      scoresByHole: scoresByHole[index]
     }));
   }
 

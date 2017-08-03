@@ -12,11 +12,11 @@ class Scorecard extends Component {
     super(props);
 
     this.handlePigChange = (event) => {
-      const scoreInfo = playerInfo(this.props.game, this.props.selectedHole);
+
       this.props.onPartnersChange({
         id: this.props.game.id,
         hole: this.props.selectedHole,
-        wolf: scoreInfo[0].player.order,
+        wolf: this.props.scoreInfo[0].player.order,
         selectedPartner: (this.props.game.partners[this.props.selectedHole] ?
           this.props.game.partners[this.props.selectedHole].selectedPartner : -2),
         pig: event.target.checked
@@ -27,7 +27,7 @@ class Scorecard extends Component {
       this.props.onPartnersChange({
         id: this.props.game.id,
         hole: this.props.selectedHole,
-        wolf: scoreInfo[0].player.order,
+        wolf: this.props.scoreInfo[0].player.order,
         selectedPartner: event.target.value,
         pig: !!(this.props.game.partners[this.props.selectedHole] && this.props.game.partners[this.props.selectedHole].pig)
       });
@@ -50,28 +50,47 @@ class Scorecard extends Component {
       )
     }
 
+    const scoreInfoByOriginalOrder = this.props.scoreInfo.reduce((prev, info) => {
+      prev[info.player.order] = info;
+      return prev;
+    }, {});
     const playerRows = this.props.game.players.map((player, index) => {
       const scores = [];
       let total = 0;
+      let pointsTotal = 0;
       for (let i = 0; i < 9; i++) {
+        const inPartners = this.props.game.partners[i] && this.props.game.partners[i].indexOf(index) >= 0;
+        let color = 'inherit';
+        let backgroundColor = 'inherit';
+        if (inPartners === true) {
+          backgroundColor = '#AAAAAA';
+          color = '#fff';
+        }
+
+        const holePoints = scoreInfoByOriginalOrder[index].scoresByHole[i];
         scores.push(
-          <td key={i}>{player.scores[i]}</td>
+          <td key={i} style={{color, backgroundColor}}>{player.scores[i]} {holePoints ? `(${holePoints})` : ''}</td>
         );
-        total += player.scores[i]
+        pointsTotal += holePoints || 0;
+        total += player.scores[i] || 0;
       }
 
       scores.push(
-        <td key="in">{total}</td>
+        <td key="in">{total} ({pointsTotal})</td>
       );
 
       for (let i = 9; i < 18; i++) {
+        const inPartners = this.props.game.partners[i] && this.props.game.partners[i].indexOf(index) >= 0;
+
+        const holePoints = scoreInfoByOriginalOrder[index].scoresByHole[i];
         scores.push(
-          <td key={i}>{player.scores[i]}</td>
+          <td key={i}>{player.scores[i]} {holePoints ? `(${holePoints})` : ''}</td>
         );
-        total += player.scores[i];
+        pointsTotal += holePoints || 0;
+        total += player.scores[i] || 0;
       }
       scores.push(
-        <td key="total">{total}</td>
+        <td key="total">{total} ({pointsTotal})</td>
       );
 
 
@@ -101,8 +120,7 @@ class Scorecard extends Component {
     )
   }
   renderScoreInputs() {
-    const scoreInfo = playerInfo(this.props.game, this.props.selectedHole);
-    const items = scoreInfo.map((info, index) => {
+    const items = this.props.scoreInfo.map((info, index) => {
       return (
         <ListItem key={info.player.order}>
           <FormLabel><span>{info.player.name}: {info.score}{index == 0 ? ' (Wolf)': ''}</span></FormLabel>
@@ -138,8 +156,7 @@ class Scorecard extends Component {
   }
 
   renderPartners() {
-    const scoreInfo = playerInfo(this.props.game, this.props.selectedHole);
-    return scoreInfo.slice(1).map((scoreInfo) => (
+    return this.props.scoreInfo.slice(1).map((scoreInfo) => (
       <option key={scoreInfo.player.order} value={scoreInfo.player.order}>{scoreInfo.player.name}</option>
     ));
   }
@@ -155,7 +172,7 @@ class Scorecard extends Component {
         <div className="data-table">
           {this.renderScoreCard()}
         </div>
-        <ContentBlockTitle>Tee Off Order: 1 Point</ContentBlockTitle>
+        <ContentBlockTitle><span>Tee Off Order Hole {this.props.selectedHole + 1}:  Point</span></ContentBlockTitle>
         {this.renderScoreInputs()}
         <List>
           <ListItem>
@@ -184,9 +201,11 @@ class Scorecard extends Component {
 
 
 const mapStateToProps = (state) => {
+  const game = state.games[state.selectedGame];
   return {
-    game: state.games[state.selectedGame],
-    selectedHole: state.selectedHole
+    game,
+    selectedHole: state.selectedHole,
+    scoreInfo: playerInfo(game, state.selectedHole)
   };
 };
 
