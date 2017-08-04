@@ -14,7 +14,7 @@
     "react-redux": "^5.0.5",
     "redux": "^3.7.2"
   },
-  "homepage": "http://taylorhakes.github.io/wolf",
+  "homepage": "http://wolf.golf",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
