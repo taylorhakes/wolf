@@ -4,7 +4,7 @@ import initNewGame from './init_new_game';
 import updateHole from './update_hole';
 import nextHole from './next_hole';
 import updatePartners from './update_partners';
-
+import selectHole from './select_hole';
 
 export {
   newGame,
@@ -12,5 +12,6 @@ export {
   initNewGame,
   updateHole,
   nextHole,
-  updatePartners
+  updatePartners,
+  selectHole
 };

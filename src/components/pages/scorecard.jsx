@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import {Page, Navbar, NavRight, Card, CardHeader, CardContent, ContentBlockTitle, FormSwitch, List, ListItem, FormLabel, FormInput, Button, GridCol, GridRow, ContentBlock, ButtonsSegmented} from 'framework7-react';
+import {Page, Navbar, NavRight, Link, NavLeft, Card, CardHeader, CardContent, ContentBlockTitle, FormSwitch, List, ListItem, FormLabel, FormInput, Button, GridCol, GridRow, ContentBlock, ButtonsSegmented} from 'framework7-react';
 import {connect} from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {playerInfo} from '../../utils';
-import {updateHole, nextHole, updatePartners} from '../../action_creators';
+import {updateHole, nextHole, updatePartners, selectHole} from '../../action_creators';
 import Select from '../select';
 import Switch from '../switch';
 
@@ -23,7 +23,6 @@ class Scorecard extends Component {
       });
     };
    this.handlePartnerChange = (event) => {
-      const scoreInfo = playerInfo(this.props.game, this.props.selectedHole);
       this.props.onPartnersChange({
         id: this.props.game.id,
         hole: this.props.selectedHole,
@@ -32,22 +31,28 @@ class Scorecard extends Component {
         pig: !!(this.props.game.partners[this.props.selectedHole] && this.props.game.partners[this.props.selectedHole].pig)
       });
     };
+
+   this.handleHoldChange = (event) => {
+      this.props.onSelectHole(+event.target.dataset.index)
+   };
   }
   renderScoreCard() {
     const headers = [];
 
     for (let i = 0; i < 9; i++) {
+      const selected = this.props.selectedHole === i;
       headers.push(
-        <th key={i}>{i + 1}</th>
+        <th key={i} data-index={i} onClick={this.handleHoldChange} style={{backgroundColor: selected ? '#f7f7f8' : ''}}>{i + 1}</th>
       )
     }
     headers.push(
       <th key="in">IN</th>
     );
     for (let i = 9; i < 18; i++) {
+      const selected = this.props.selectedHole === i;
       headers.push(
-        <th key={i}>{i + 1}</th>
-      )
+        <th key={i} data-index={i} onClick={this.handleHoldChange} style={{backgroundColor: selected ? '#f7f7f8' : ''}}>{i + 1}</th>
+      );
     }
 
     const scoreInfoByOriginalOrder = this.props.scoreInfo.reduce((prev, info) => {
@@ -61,15 +66,19 @@ class Scorecard extends Component {
       for (let i = 0; i < 9; i++) {
         const inPartners = this.props.game.partners[i] && this.props.game.partners[i].indexOf(index) >= 0;
         let color = 'inherit';
+
+        const selected = this.props.selectedHole === i;
         let backgroundColor = 'inherit';
         if (inPartners === true) {
           backgroundColor = '#AAAAAA';
           color = '#fff';
+        } else if (selected) {
+          backgroundColor ='#f7f7f8';
         }
 
         const holePoints = scoreInfoByOriginalOrder[index].scoresByHole[i];
         scores.push(
-          <td key={i} style={{color, backgroundColor}}>{player.scores[i]} {holePoints ? `(${holePoints})` : ''}</td>
+          <td key={i}  data-index={i}  onClick={this.handleHoldChange} style={{color, backgroundColor}}>{player.scores[i]} {holePoints ? `(${holePoints})` : ''}</td>
         );
         pointsTotal += holePoints || 0;
         total += player.scores[i] || 0;
@@ -81,10 +90,20 @@ class Scorecard extends Component {
 
       for (let i = 9; i < 18; i++) {
         const inPartners = this.props.game.partners[i] && this.props.game.partners[i].indexOf(index) >= 0;
+        let color = 'inherit';
+
+        const selected = this.props.selectedHole === i;
+        let backgroundColor = 'inherit';
+        if (inPartners === true) {
+          backgroundColor = '#AAAAAA';
+          color = '#fff';
+        } else if (selected) {
+          backgroundColor ='#f7f7f8';
+        }
 
         const holePoints = scoreInfoByOriginalOrder[index].scoresByHole[i];
         scores.push(
-          <td key={i}>{player.scores[i]} {holePoints ? `(${holePoints})` : ''}</td>
+          <td key={i}  data-index={i}  onClick={this.handleHoldChange} style={{color, backgroundColor}}>{player.scores[i]} {holePoints ? `(${holePoints})` : ''}</td>
         );
         pointsTotal += holePoints || 0;
         total += player.scores[i] || 0;
@@ -108,7 +127,7 @@ class Scorecard extends Component {
       <table>
         <thead>
         <tr>
-          <th key="empty"></th>
+          <th key="empty" />
           {headers}
           <th key="total">TOT</th>
         </tr>
@@ -124,26 +143,16 @@ class Scorecard extends Component {
       return (
         <ListItem key={info.player.order}>
           <FormLabel><span>{info.player.name}: {info.score}{index == 0 ? ' (Wolf)': ''}</span></FormLabel>
-          <Select
-                     value={info.player.scores[this.props.selectedHole] || '-1'}
+          <FormInput type="number" pattern="[0-9]*"
+                     value={info.player.scores[this.props.selectedHole] || ''}
                      onChange={(event) => this.props.onHoleChange({
                        id: this.props.game.id,
                        hole: this.props.selectedHole,
                        score: +event.target.value,
                        order: info.player.order
-                   })}>
-            <option value="-1">Select a score</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="8">9</option>
-            <option value="8">10</option>
-          </Select>
+                   })}
+                     placeholder="Enter score"
+          />
         </ListItem>
       )
     });
@@ -164,7 +173,10 @@ class Scorecard extends Component {
   render() {
     return (
       <Page>
-        <Navbar backLink="Back" title="Scorecard" sliding>
+        <Navbar sliding>
+          <NavLeft>
+            <Link  href="/">Back</Link>
+          </NavLeft>
           <NavRight>
             <FormSwitch/>
           </NavRight>
@@ -212,8 +224,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => {
   return bindActionCreators({
     onHoleChange: updateHole,
+    onSelectHole: selectHole,
     onNextHole: nextHole,
-    onPartnersChange: updatePartners
+    onPartnersChange: updatePartners,
   }, dispatch);
 };
 
