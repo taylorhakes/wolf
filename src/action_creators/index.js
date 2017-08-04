@@ -5,6 +5,7 @@ import updateHole from './update_hole';
 import nextHole from './next_hole';
 import updatePartners from './update_partners';
 import selectHole from './select_hole';
+import pageChange from './page_change';
 
 export {
   newGame,
@@ -13,5 +14,6 @@ export {
   updateHole,
   nextHole,
   updatePartners,
-  selectHole
+  selectHole,
+  pageChange
 };

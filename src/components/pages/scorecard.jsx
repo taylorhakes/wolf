@@ -78,7 +78,7 @@ class Scorecard extends Component {
 
         const holePoints = scoreInfoByOriginalOrder[index].scoresByHole[i];
         scores.push(
-          <td key={i}  data-index={i}  onClick={this.handleHoldChange} style={{color, backgroundColor}}>{player.scores[i]} {holePoints ? `(${holePoints})` : ''}</td>
+          <td key={i} data-index={i}  onClick={this.handleHoldChange} style={{color, backgroundColor}}>{player.scores[i]} {holePoints ? `(${holePoints})` : ''}</td>
         );
         pointsTotal += holePoints || 0;
         total += player.scores[i] || 0;

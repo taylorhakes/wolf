@@ -5,19 +5,27 @@ import {
 	List, ListItem, Views, NavLeft, Link, NavCenter, NavRight, GridRow, GridCol, Button, Popup,
 	LoginScreen, LoginScreenTitle, ListButton, ListLabel, FormLabel, FormInput
 } from 'framework7-react';
-import {connect} from 'react-redux';
-import { bindActionCreators } from 'redux'
 import Main from './pages/main';
 import Game from './pages/game'
+import Scorecard from './pages/scorecard';
 
 import {routes} from '../routes';
-import {initNewGame} from '../action_creators';
+import {connect} from 'react-redux';
 
 
 
-class Container extends Component {
+class App extends Component {
 	constructor(props) {
 		super(props);
+		this.pages = {
+			'game': Game,
+			'main': Main,
+			'scorecard': Scorecard
+		}
+	}
+	renderPage() {
+		const Page = this.pages[this.props.page]
+		return (<Page />);
 	}
 
 	render() {
@@ -32,20 +40,36 @@ class Container extends Component {
           ) : null}
           {/* Pages */}
 					<Pages>
-						<Main/>
+						{this.renderPage()}
 					</Pages>
 				</View>
 			</Views>
     );
 	}
 }
-Container.contextTypes = {
+App.contextTypes = {
 	framework7AppContext: PropTypes.object
 };
 
-export const App = () => (	
+const mapStateToProps = (state) => {
+  return {
+    page: state.page
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {};
+};
+
+const AppConnnect = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App)
+
+
+export default () => (
 	//Change themeType to "material" to use the Material theme
 	<Framework7App themeType="ios" routes={routes}>
-		<Container />
+		<AppConnnect />
 	</Framework7App>  
 );

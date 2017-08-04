@@ -1,9 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import { bindActionCreators } from 'redux'
-import {newGame, updateTempGame} from '../../action_creators';
-import PlayerList from '../player_list';
-import {initNewGame} from '../../action_creators';
+import { bindActionCreators } from 'redux';
+import {initNewGame, pageChange} from '../../action_creators';
 
 import {
   Page,
@@ -35,7 +33,7 @@ class Main extends Component {
         <Navbar title="Wolf"/>
         <ContentBlockTitle>Welcome to Wolf</ContentBlockTitle>
         <ContentBlock inner>
-          <Button href="/form/" onClick={this.props.onNewGame}>Create New Game</Button>
+          <Button onClick={this.props.onNewGame}>Create New Game</Button>
         </ContentBlock>
         <ContentBlockTitle>View Existing Games</ContentBlockTitle>
         <List>

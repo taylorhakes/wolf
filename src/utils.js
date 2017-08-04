@@ -11,14 +11,24 @@ function newFilledArray(len, val) {
   return rv;
 }
 
-export function playerInfo(game, hole) {
+
+export function pointsToDollars(pointsArr, numPlayers, dollarsPerPoint) {
+  const total = pointsArr.reduce((prev, current) => prev + current, 0);
+  const average = total / numPlayers;
+  return pointsArr.map((points) => {
+    return (points - average) * numPlayers * dollarsPerPoint;
+  });
+}
+
+export function playerInfo(game, hole, useDollars) {
+  useDollars = true;
   const players = game.players;
   const partners = game.partners;
 
   let points = game.startingPoints;
   const scores = newFilledArray(players.length, 0);
   const scoresByHole = newFilledArray(players.length, () => []);
-  for (let i = 0; i < hole; i++) {
+  for (let i = 0; i < hole + 1; i++) {
     let lowestScorers = [];
     let bestScore = null;
     for (let j = 0; j < players.length; j++) {
@@ -61,11 +71,18 @@ export function playerInfo(game, hole) {
 
 
       if (winners.length) {
+        const holeScore = partners[i].length == 1 && game.doublesOnWolf ? 2 * points: points;
+        const totalPoints = holeScore * winners.length;
         for (let j = 0; j < winners.length; j++) {
-          const holeScore = partners[i].length == 1 && game.doublesOnWolf ? 2 * points: points;
-          scoresByHole[winners[j]][i] = holeScore;
+          if (useDollars) {
+            const dollars = (holeScore - (totalPoints / game.players.length)) * game.players.length * game.dollarsPerPoint;
+            scoresByHole[winners[j]][i] = dollars;
+          } else {
+            scoresByHole[winners[j]][i] = holeScore;
+          }
           scores[winners[j]] += holeScore;
         }
+
       }
     }
 
