@@ -45,8 +45,7 @@ Container.contextTypes = {
 
 export const App = () => (	
 	//Change themeType to "material" to use the Material theme
-	<Framework7App themeType="ios" routes={routes}>		
-		<Statusbar />
+	<Framework7App themeType="ios" routes={routes}>
 		<Container />
 	</Framework7App>  
 );
