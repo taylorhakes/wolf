@@ -98,7 +98,7 @@ class GameSettings extends Component {
         (
           <ListItem key="carryOvers">
             <FormLabel>Carry overs</FormLabel>
-            <Switch checked={settings.carryOvers} value={settings.carryOvers}
+            <Switch checked={settings.carryOvers}
                         onChange={(checked) => this.handleSettingChange('carryOvers', checked)}/>
           </ListItem>
         )
@@ -107,14 +107,14 @@ class GameSettings extends Component {
       if (settings.carryOvers) {
         items.push(
           (<ListItem key="pointsPerHole">
-            <FormLabel>Points per hole</FormLabel>
+            <FormLabel>&nbsp;&nbsp;Points per hole</FormLabel>
             <FormInput type="number" pattern="[0-9]*" value={settings.pointsPerHole}
                        onChange={(event) => this.handleSettingChange('pointsPerHole', event.target.value)}/>
           </ListItem>),
           (<ListItem key="staysUpOnCarryOver">
-            <FormLabel>Carry overs don't reset</FormLabel>
-            <Switch checked={settings.staysUpOnCarryOver}
-                        onChange={(checked) => this.handleSettingChange('staysUpOnCarryOver', checked)}/>
+            <FormLabel>&nbsp;&nbsp;Reset after win</FormLabel>
+            <Switch checked={!settings.staysUpOnCarryOver}
+                        onChange={(checked) => this.handleSettingChange('staysUpOnCarryOver', !checked)}/>
           </ListItem>)
         );
       }

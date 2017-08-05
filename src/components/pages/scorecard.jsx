@@ -184,7 +184,7 @@ class Scorecard extends Component {
             </a>
           </NavLeft>
           <NavRight>
-            <Switch onChange={this.handleChangeDollars} checked={this.props.useDollars} />
+            $&nbsp;<Switch onChange={this.handleChangeDollars} checked={this.props.useDollars} />
           </NavRight>
         </Navbar>
         <div className="data-table">

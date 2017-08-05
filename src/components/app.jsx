@@ -9,7 +9,6 @@ import Main from './pages/main';
 import Game from './pages/game'
 import Scorecard from './pages/scorecard';
 
-import {routes} from '../routes';
 import {connect} from 'react-redux';
 import ReactCSSTransitionReplace from 'react-addons-css-transition-group';
 
@@ -70,7 +69,7 @@ const AppConnnect = connect(
 
 export default () => (
 	//Change themeType to "material" to use the Material theme
-	<Framework7App themeType="ios" routes={routes}>
+	<Framework7App themeType="material">
 		<AppConnnect />
 	</Framework7App>  
 );

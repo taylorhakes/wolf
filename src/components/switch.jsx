@@ -4,16 +4,22 @@ export default class Switch extends Component {
   constructor(props) {
     super(props);
     this.els = {};
+    this.lastChange = 0;
 
     this.handleClick = (e) => {
-      setTimeout(() => {
-        this.props.onChange(this.els.checkbox.checked);
-      }, 100);
+      if (Date.now() - this.lastChange > 100) {
+        setTimeout(() => {
+          this.props.onChange(this.els.checkbox.checked);
+        }, 50);
+      }
     };
     this.getCheckbox = (el) => {
       this.els.checkbox = el;
     };
-    this.handleChange = () => {};
+    this.handleChange = (e) => {
+      this.lastChange = Date.now();
+      this.props.onChange(e.target.checked);
+    };
   }
 
 
