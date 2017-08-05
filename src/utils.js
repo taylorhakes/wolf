@@ -11,24 +11,17 @@ function newFilledArray(len, val) {
   return rv;
 }
 
-
-export function pointsToDollars(pointsArr, numPlayers, dollarsPerPoint) {
-  const total = pointsArr.reduce((prev, current) => prev + current, 0);
-  const average = total / numPlayers;
-  return pointsArr.map((points) => {
-    return (points - average) * numPlayers * dollarsPerPoint;
-  });
-}
-
 export function playerInfo(game, hole, useDollars) {
-  useDollars = true;
   const players = game.players;
   const partners = game.partners;
 
   let points = game.startingPoints;
   const scores = newFilledArray(players.length, 0);
   const scoresByHole = newFilledArray(players.length, () => []);
+  const pointsByHole = [];
   for (let i = 0; i < hole + 1; i++) {
+    pointsByHole[i] = points;
+
     let lowestScorers = [];
     let bestScore = null;
     for (let j = 0; j < players.length; j++) {
@@ -74,15 +67,15 @@ export function playerInfo(game, hole, useDollars) {
         const holeScore = partners[i].length == 1 && game.doublesOnWolf ? 2 * points: points;
         const totalPoints = holeScore * winners.length;
         for (let j = 0; j < winners.length; j++) {
-          if (useDollars) {
-            const dollars = (holeScore - (totalPoints / game.players.length)) * game.players.length * game.dollarsPerPoint;
-            scoresByHole[winners[j]][i] = dollars;
-          } else {
-            scoresByHole[winners[j]][i] = holeScore;
-          }
-          scores[winners[j]] += holeScore;
+          scoresByHole[winners[j]][i] = holeScore;
         }
 
+        if (useDollars) {
+          for (let j = 0; j < players.length; j++) {
+            const dollars = ((scoresByHole[j][i] || 0) - (totalPoints / game.players.length)) * game.players.length * game.dollarsPerPoint;
+            scoresByHole[j][i] = dollars;
+          }
+        }
       }
     }
 
@@ -93,6 +86,10 @@ export function playerInfo(game, hole, useDollars) {
     }
   }
 
+  const sum = (arr) => arr.reduce((prev, current) => prev + current, 0);
+  for (let j = 0; j < players.length; j++) {
+    scores[j] = sum(scoresByHole[j]);
+  }
 
   let scoreList;
   if (hole + players.length <= 18) {
@@ -120,7 +117,10 @@ export function playerInfo(game, hole, useDollars) {
     }));
   }
 
-  return scoreList;
+  return {
+    scoreList,
+    pointsByHole
+  };
 }
 
 

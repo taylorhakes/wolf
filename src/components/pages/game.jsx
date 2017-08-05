@@ -16,7 +16,9 @@ import {
   FormInput,
   Button,
   GridCol,
-  GridRow
+  GridRow,
+  NavLeft,
+  NavCenter
 } from 'framework7-react';
 import Switch from '../switch';
 import { lossEstimate } from '../../utils';
@@ -95,9 +97,9 @@ class GameSettings extends Component {
       const items = [
         (
           <ListItem key="carryOvers">
-            <FormLabel>Carry Overs</FormLabel>
+            <FormLabel>Carry overs</FormLabel>
             <Switch checked={settings.carryOvers} value={settings.carryOvers}
-                        onChange={(event) => this.handleSettingChange('carryOvers', event.target.checked)}/>
+                        onChange={(checked) => this.handleSettingChange('carryOvers', checked)}/>
           </ListItem>
         )
       ];
@@ -106,13 +108,13 @@ class GameSettings extends Component {
         items.push(
           (<ListItem key="pointsPerHole">
             <FormLabel>Points per hole</FormLabel>
-            <FormInput type="number" pattern="[0-9\.]*" value={settings.pointsPerHole}
+            <FormInput type="number" pattern="[0-9]*" value={settings.pointsPerHole}
                        onChange={(event) => this.handleSettingChange('pointsPerHole', event.target.value)}/>
           </ListItem>),
           (<ListItem key="staysUpOnCarryOver">
-            <FormLabel>Stays up on carry over</FormLabel>
+            <FormLabel>Carry overs don't reset</FormLabel>
             <Switch checked={settings.staysUpOnCarryOver}
-                        onChange={(event) => this.handleSettingChange('staysUpOnCarryOver', event.target.checked)}/>
+                        onChange={(checked) => this.handleSettingChange('staysUpOnCarryOver', checked)}/>
           </ListItem>)
         );
       }
@@ -130,11 +132,14 @@ class GameSettings extends Component {
     return (
       <Page hideBarsOnScroll>
         <Navbar>
-          <div className="left">
+          <NavLeft>
             <a className="back link" href="#" onClick={this.handleBack}>
               <i className="icon-back icon" /><span>Back</span>
             </a>
-          </div>
+          </NavLeft>
+          <NavCenter>
+            Game Settings
+          </NavCenter>
         </Navbar>
         <PlayerList
           players={settings.playerNames}
@@ -153,13 +158,13 @@ class GameSettings extends Component {
           </ListItem>
           <ListItem key="dollarsPerPoint">
             <FormLabel>Dollars per point</FormLabel>
-            <FormInput type="number" value={settings.dollarsPerPoint}
+            <FormInput type="number" pattern="[0-9]\." value={settings.dollarsPerPoint}
                        onChange={(event) => this.handleSettingChange('dollarsPerPoint', event.target.value)}/>
           </ListItem>
           <ListItem key="doublesOnWolf">
             <FormLabel>Doubles on wolf/pig</FormLabel>
             <Switch checked={settings.doublesOnWolf}
-                        onChange={(event) => this.handleSettingChange('doublesOnWolf', event.target.checked)}/>
+                        onChange={(checked) => this.handleSettingChange('doublesOnWolf', checked)}/>
           </ListItem>
           {this.renderCarryOvers()}
         </List>

@@ -6,6 +6,9 @@ import nextHole from './next_hole';
 import updatePartners from './update_partners';
 import selectHole from './select_hole';
 import pageChange from './page_change';
+import selectGame from './select_game';
+import changeDollars from './change_dollars'
+import deleteGame from './delete_game';
 
 export {
   newGame,
@@ -15,5 +18,8 @@ export {
   nextHole,
   updatePartners,
   selectHole,
-  pageChange
+  pageChange,
+  selectGame,
+  changeDollars,
+  deleteGame
 };

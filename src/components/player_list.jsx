@@ -52,7 +52,7 @@ export default class PlayerList extends Component {
         <List form style={{marginBottom: 5}}>
           {this.renderPlayers()}
         </List>
-        <ContentBlock>
+        <ContentBlock style={{marginTop: 0}}>
           <GridRow>
             {this.renderPlus()}
             {this.renderMinus()}

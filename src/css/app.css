@@ -2,6 +2,18 @@
     position: absolute;
 }
 
+.list-block .item-title.label, .list-block .item-input {
+    width: auto;
+}
+
+input[type="number"] {
+    text-align: right;
+}
+
+.navbar .center {
+    margin: auto;
+}
+
 .page {
     padding-top: 44px;
 }

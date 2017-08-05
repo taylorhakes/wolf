@@ -6,6 +6,8 @@ export default function(state='main', action) {
       return 'game';
     case 'NEW_GAME':
       return 'scorecard';
+    case 'SELECT_GAME':
+      return 'scorecard';
     default:
       return state;
   }

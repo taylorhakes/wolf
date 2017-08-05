@@ -3,7 +3,7 @@ import {Page, Navbar, NavRight, Link, NavLeft, Card, CardHeader, CardContent, Co
 import {connect} from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {playerInfo} from '../../utils';
-import {updateHole, nextHole, updatePartners, selectHole, pageChange} from '../../action_creators';
+import {updateHole, nextHole, updatePartners, selectHole, pageChange, changeDollars} from '../../action_creators';
 import Select from '../select';
 import Switch from '../switch';
 
@@ -11,7 +11,7 @@ class Scorecard extends Component {
   constructor(props) {
     super(props);
 
-    this.handlePigChange = (event) => {
+    this.handlePigChange = (checked) => {
 
       this.props.onPartnersChange({
         id: this.props.game.id,
@@ -19,7 +19,7 @@ class Scorecard extends Component {
         wolf: this.props.scoreInfo[0].player.order,
         selectedPartner: (this.props.game.partners[this.props.selectedHole] ?
           this.props.game.partners[this.props.selectedHole].selectedPartner : -2),
-        pig: event.target.checked
+        pig: checked
       });
     };
    this.handlePartnerChange = (event) => {
@@ -35,6 +35,8 @@ class Scorecard extends Component {
    this.handleHoldChange = (event) => {
       this.props.onSelectHole(+event.target.dataset.index)
    };
+
+   this.handleChangeDollars = (checked) => this.props.onChangeDollars(checked);
 
    this.handleBack = () => this.props.pageChange('main')
   }
@@ -144,7 +146,7 @@ class Scorecard extends Component {
     const items = this.props.scoreInfo.map((info, index) => {
       return (
         <ListItem key={info.player.order}>
-          <FormLabel><span>{info.player.name}: {info.score}{index == 0 ? ' (Wolf)': ''}</span></FormLabel>
+          <FormLabel><span>{info.player.name}: {this.props.useDollars ? '$' : ''}{info.score}{index == 0 ? ' (Wolf)': ''}</span></FormLabel>
           <FormInput type="number" pattern="[0-9]*"
                      value={info.player.scores[this.props.selectedHole] || ''}
                      onChange={(event) => this.props.onHoleChange({
@@ -177,16 +179,18 @@ class Scorecard extends Component {
       <Page>
         <Navbar sliding>
           <NavLeft>
-            <Link onClick={this.handleBack()}>Back</Link>
+            <a className="back link" href="#" onClick={this.handleBack}>
+              <i className="icon-back icon" /><span>Back</span>
+            </a>
           </NavLeft>
           <NavRight>
-            <FormSwitch/>
+            <Switch onChange={this.handleChangeDollars} checked={this.props.useDollars} />
           </NavRight>
         </Navbar>
         <div className="data-table">
           {this.renderScoreCard()}
         </div>
-        <ContentBlockTitle><span>Tee Off Order Hole {this.props.selectedHole + 1}:  Point</span></ContentBlockTitle>
+        <ContentBlockTitle><span>Hole {this.props.selectedHole + 1}: <strong>{this.props.points} Point</strong></span></ContentBlockTitle>
         {this.renderScoreInputs()}
         <List>
           <ListItem>
@@ -216,10 +220,13 @@ class Scorecard extends Component {
 
 const mapStateToProps = (state) => {
   const game = state.games[state.selectedGame];
+  const matchInfo = playerInfo(game, state.selectedHole, state.useDollars)
   return {
     game,
     selectedHole: state.selectedHole,
-    scoreInfo: playerInfo(game, state.selectedHole)
+    scoreInfo: matchInfo.scoreList,
+    points: matchInfo.pointsByHole[state.selectedHole],
+    useDollars: state.useDollars
   };
 };
 
@@ -229,6 +236,7 @@ const mapDispatchToProps = dispatch => {
     onSelectHole: selectHole,
     onNextHole: nextHole,
     onPartnersChange: updatePartners,
+    onChangeDollars: changeDollars,
     pageChange
   }, dispatch);
 };
