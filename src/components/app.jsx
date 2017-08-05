@@ -11,6 +11,7 @@ import Scorecard from './pages/scorecard';
 
 import {routes} from '../routes';
 import {connect} from 'react-redux';
+import ReactCSSTransitionReplace from 'react-addons-css-transition-group';
 
 
 
@@ -24,23 +25,23 @@ class App extends Component {
 		}
 	}
 	renderPage() {
-		const Page = this.pages[this.props.page]
-		return (<Page />);
+		const Page = this.pages[this.props.page];
+		return (<Page key={this.props.page} />);
 	}
 
 	render() {
     return (
 			<Views>
-				<View url="/" id="main-view" dom navbarThrough dynamicNavbar={true}>
-          {/* Navbar */}
-          {this.context.framework7AppContext.theme.ios ? (
-						<Navbar>
-							<NavCenter sliding>Wolf</NavCenter>
-						</Navbar>
-          ) : null}
-          {/* Pages */}
+				<View url="/" id="main-view">
 					<Pages>
-						{this.renderPage()}
+						<ReactCSSTransitionReplace
+							transitionName={this.props.page === 'main' ? 'back': 'forward'}
+							transitionEnterTimeout={300}
+							transitionLeaveTimeout={300}
+						>
+              {this.renderPage()}
+						</ReactCSSTransitionReplace>
+
 					</Pages>
 				</View>
 			</Views>

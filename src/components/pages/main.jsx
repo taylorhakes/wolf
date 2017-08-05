@@ -33,7 +33,7 @@ class Main extends Component {
         <Navbar title="Wolf"/>
         <ContentBlockTitle>Welcome to Wolf</ContentBlockTitle>
         <ContentBlock inner>
-          <Button onClick={this.props.onNewGame}>Create New Game</Button>
+          <Button className="button button-big button-fill" onClick={this.props.onNewGame}>Create New Game</Button>
         </ContentBlock>
         <ContentBlockTitle>View Existing Games</ContentBlockTitle>
         <List>
@@ -58,7 +58,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => {
   return bindActionCreators({
-    onNewGame: initNewGame
+    onNewGame: initNewGame,
+    onPageChange: pageChange
   }, dispatch);
 };
 

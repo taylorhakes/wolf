@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import { bindActionCreators } from 'redux'
-import {newGame, updateTempGame} from '../../action_creators';
+import {newGame, updateTempGame, pageChange} from '../../action_creators';
 import PlayerList from '../player_list';
 import {
   Page,
@@ -22,6 +22,25 @@ import Switch from '../switch';
 import { lossEstimate } from '../../utils';
 
 const pStyle = {margin: '1em'};
+
+function shuffle(array) {
+  let currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
 
 class GameSettings extends Component {
   constructor(props) {
@@ -46,6 +65,13 @@ class GameSettings extends Component {
     this.handlePlayerAdd = () => {
       const newArr = this.props.settings.playerNames.slice();
       newArr.push('');
+      this.props.onGameChange({
+        playerNames: newArr
+      });
+    };
+
+    this.handleRandom = () => {
+      const newArr = shuffle(this.props.settings.playerNames.slice());
       this.props.onGameChange({
         playerNames: newArr
       });
@@ -93,6 +119,8 @@ class GameSettings extends Component {
 
       return items;
     };
+
+    this.handleBack = () => this.props.pageChange('main')
   }
 
   render() {
@@ -100,13 +128,21 @@ class GameSettings extends Component {
     const estimated = lossEstimate(settings);
 
     return (
-      <Page>
-        <Navbar backLink="Back" title="Game Settings" sliding/>
+      <Page hideBarsOnScroll>
+        <Navbar>
+          <div className="left">
+            <a className="back link" href="#" onClick={this.handleBack}>
+              <i className="icon-back icon" /><span>Back</span>
+            </a>
+          </div>
+        </Navbar>
         <PlayerList
           players={settings.playerNames}
           onChange={this.handlePlayerChange}
           onRemove={this.handlePlayerRemove}
-          onAdd={this.handlePlayerAdd}/>
+          onAdd={this.handlePlayerAdd}
+          onRandom={this.handleRandom}
+        />
 
         <ContentBlockTitle>Game Rules</ContentBlockTitle>
         <List form>
@@ -132,7 +168,7 @@ class GameSettings extends Component {
           <CardContent><span>${estimated}</span></CardContent>
         </Card>
         <GridRow style={pStyle}>
-          <GridCol><Button href="/scorecard/" big fill color="green" onClick={this.handleCreateGame}>Create Game</Button></GridCol>
+          <GridCol><Button big fill onClick={this.handleCreateGame}>Create Game</Button></GridCol>
         </GridRow>
       </Page>
     );
@@ -148,7 +184,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => {
   return bindActionCreators({
     onSaveGame: newGame,
-    onGameChange: updateTempGame
+    onGameChange: updateTempGame,
+    pageChange
   }, dispatch);
 };
 

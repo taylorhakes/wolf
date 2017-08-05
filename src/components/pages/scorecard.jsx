@@ -3,7 +3,7 @@ import {Page, Navbar, NavRight, Link, NavLeft, Card, CardHeader, CardContent, Co
 import {connect} from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {playerInfo} from '../../utils';
-import {updateHole, nextHole, updatePartners, selectHole} from '../../action_creators';
+import {updateHole, nextHole, updatePartners, selectHole, pageChange} from '../../action_creators';
 import Select from '../select';
 import Switch from '../switch';
 
@@ -35,6 +35,8 @@ class Scorecard extends Component {
    this.handleHoldChange = (event) => {
       this.props.onSelectHole(+event.target.dataset.index)
    };
+
+   this.handleBack = () => this.props.pageChange('main')
   }
   renderScoreCard() {
     const headers = [];
@@ -175,7 +177,7 @@ class Scorecard extends Component {
       <Page>
         <Navbar sliding>
           <NavLeft>
-            <Link  href="/">Back</Link>
+            <Link onClick={this.handleBack()}>Back</Link>
           </NavLeft>
           <NavRight>
             <FormSwitch/>
@@ -227,6 +229,7 @@ const mapDispatchToProps = dispatch => {
     onSelectHole: selectHole,
     onNextHole: nextHole,
     onPartnersChange: updatePartners,
+    pageChange
   }, dispatch);
 };
 

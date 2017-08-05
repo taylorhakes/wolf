@@ -1,3 +1,38 @@
-.list-block .item-title.label{
-    width: 50%;
+.navbar {
+    position: absolute;
+}
+
+.page {
+    padding-top: 44px;
+}
+
+.forward-enter {
+    transform: translate(100%);
+}
+.forward-enter.forward-enter-active {
+    transform: translate(0%);
+    transition: transform 300ms ease-out;
+}
+.forward-leave {
+    transform: translate(0%);
+}
+.forward-leave.forward-leave-active {
+    transform: translate(-100%);
+    transition: transform 300ms ease-out;
+}
+
+
+.back-enter {
+    transform: translate(-100%);
+}
+.back-enter.back-enter-active {
+    transform: translate(0%);
+    transition: transform 300ms ease-out;
+}
+.back-leave {
+    transform: translate(0%);
+}
+.back-leave.back-leave-active {
+    transform: translate(100%);
+    transition: transform 300ms ease-out;
 }

@@ -7,7 +7,8 @@ import {
   Button,
   GridCol,
   GridRow,
-  ContentBlockTitle
+  ContentBlockTitle,
+  ContentBlock
 } from 'framework7-react';
 
 export default class PlayerList extends Component {
@@ -29,7 +30,7 @@ export default class PlayerList extends Component {
       }
 
       return (
-        <GridCol><Button big fill color="green" onClick={this.props.onAdd}>+</Button></GridCol>
+        <GridCol><Button color="green" onClick={this.props.onAdd}>+</Button></GridCol>
       );
     };
 
@@ -39,7 +40,7 @@ export default class PlayerList extends Component {
       }
 
       return (
-        <GridCol><Button big fill color="red" onClick={this.props.onRemove}>-</Button></GridCol>
+        <GridCol><Button  color="red" onClick={this.props.onRemove}>-</Button></GridCol>
       );
     };
   }
@@ -51,10 +52,13 @@ export default class PlayerList extends Component {
         <List form style={{marginBottom: 5}}>
           {this.renderPlayers()}
         </List>
-        <GridRow>
-          {this.renderPlus()}
-          {this.renderMinus()}
-        </GridRow>
+        <ContentBlock>
+          <GridRow>
+            {this.renderPlus()}
+            {this.renderMinus()}
+            <GridCol><Button  onClick={this.props.onRandom}>Random</Button></GridCol>
+          </GridRow>
+        </ContentBlock>
       </div>
     );
   }
