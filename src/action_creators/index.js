@@ -9,6 +9,7 @@ import pageChange from './page_change';
 import selectGame from './select_game';
 import changeDollars from './change_dollars'
 import deleteGame from './delete_game';
+import updateExtraPoints from './update_extra_points';
 
 export {
   newGame,
@@ -21,5 +22,6 @@ export {
   pageChange,
   selectGame,
   changeDollars,
-  deleteGame
+  deleteGame,
+  updateExtraPoints
 };

@@ -3,7 +3,8 @@ import {Page, Navbar, NavRight, Link, NavLeft, Card, CardHeader, CardContent, Co
 import {connect} from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {playerInfo} from '../../utils';
-import {updateHole, nextHole, updatePartners, selectHole, pageChange, changeDollars} from '../../action_creators';
+import {updateHole, nextHole, updatePartners, selectHole, pageChange, changeDollars,
+  updateExtraPoints} from '../../action_creators';
 import Select from '../select';
 import Switch from '../switch';
 
@@ -208,10 +209,20 @@ class Scorecard extends Component {
               onChange={this.handlePigChange}
               checked={this.props.game.partners[this.props.selectedHole] ? this.props.game.partners[this.props.selectedHole].pig : false}/>
           </ListItem>
+          <ListItem >
+            <FormLabel><span>Extra points to winning team</span></FormLabel>
+            <FormInput type="number" pattern="[0-9]*" onChange={(event) => this.props.onExtraPointsChange({
+              id: this.props.game.id,
+              hole: this.props.selectedHole,
+              extraPoints: +event.target.value || 0,
+            })}
+                       placeholder="Enter score" value={this.props.game.extraPoints[this.props.selectedHole] || 0}
+            />
+          </ListItem>
         </List>
-        <GridRow>
-          <GridCol><Button big fill onClick={this.props.onNextHole}>Next Hole</Button></GridCol>
-        </GridRow>
+        <ContentBlock inner>
+          <Button big fill onClick={this.props.onNextHole}>Next Hole</Button>
+        </ContentBlock>
       </Page>
     );
   }
@@ -237,7 +248,9 @@ const mapDispatchToProps = dispatch => {
     onNextHole: nextHole,
     onPartnersChange: updatePartners,
     onChangeDollars: changeDollars,
-    pageChange
+    onExtraPointsChange: updateExtraPoints,
+    pageChange,
+
   }, dispatch);
 };
 

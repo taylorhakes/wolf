@@ -64,7 +64,7 @@ export function playerInfo(game, hole, useDollars) {
 
 
       if (winners.length) {
-        const holeScore = partners[i].length == 1 && game.doublesOnWolf ? 2 * points: points;
+        const holeScore = ((partners[i].length == 1 && game.doublesOnWolf) ? 2 * points: points) + game.extraPoints[i];
         const totalPoints = holeScore * winners.length;
         for (let j = 0; j < winners.length; j++) {
           scoresByHole[winners[j]][i] = holeScore;

@@ -2,7 +2,7 @@ export default function(state={}, action) {
   let game;
   switch (action.type) {
     case 'NEW_GAME':
-      game = {...action.payload, partners: []};
+      game = {...action.payload, partners: [], extraPoints: []};
       game.players =  game.playerNames.map((name, index) => ({
         name,
         order: index,
@@ -11,11 +11,6 @@ export default function(state={}, action) {
       return {
         ...state,
         [game.id]: game
-      };
-    case 'UPDATE_GAME':
-      return {
-        ...state,
-        [action.payload.id]: {...state[action.payload.id], ...action.payload.id}
       };
     case 'UPDATE_HOLE':
       game = {...state[action.payload.id]};
@@ -30,6 +25,12 @@ export default function(state={}, action) {
        return player;
       });
 
+      return {...state, [game.id]: game};
+    case 'UPDATE_EXTRA_POINTS':
+      game = {...state[action.payload.id]};
+      const extraPoints = [...game.extraPoints];
+      extraPoints[action.payload.hole] = action.payload.extraPoints;
+      game.extraPoints = extraPoints;
       return {...state, [game.id]: game};
 
     case 'UPDATE_PARTNERS':

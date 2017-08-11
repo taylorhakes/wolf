@@ -39,7 +39,7 @@ class Main extends Component {
       <ListItem swipeout key={game.id} onClick={this.props.onSelectGame.bind(null, game.id)} title={moment(+game.id).format("MMM Do, YYYY")}>
         <ListItemSwipeoutActions>
           {/*<ListItemSwipeoutButton close color="blue">Edit</ListItemSwipeoutButton>*/}
-          <ListItemSwipeoutButton onClick={this.handleDelete.bind(null, game.id)}>Delete</ListItemSwipeoutButton>
+          <ListItemSwipeoutButton color="red" onClick={this.handleDelete.bind(null, game.id)}>Delete</ListItemSwipeoutButton>
         </ListItemSwipeoutActions>
       </ListItem>
     ));
