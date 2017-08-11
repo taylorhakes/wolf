@@ -109,7 +109,7 @@ class GameSettings extends Component {
           (<ListItem key="pointsPerHole">
             <FormLabel>&nbsp;&nbsp;Points per hole</FormLabel>
             <FormInput type="number" pattern="[0-9]*" value={settings.pointsPerHole}
-                       onChange={(event) => this.handleSettingChange('pointsPerHole', event.target.value)}/>
+                       onChange={(event) => this.handleSettingChange('pointsPerHole', +event.target.value)}/>
           </ListItem>),
           (<ListItem key="staysUpOnCarryOver">
             <FormLabel>&nbsp;&nbsp;Reset after win</FormLabel>
@@ -154,12 +154,12 @@ class GameSettings extends Component {
           <ListItem key="startingPoints">
             <FormLabel>Starting points</FormLabel>
             <FormInput type="number" pattern="[0-9]*" value={settings.startingPoints}
-                       onChange={(event) => this.handleSettingChange('startingPoints', event.target.value)}/>
+                       onChange={(event) => this.handleSettingChange('startingPoints', +event.target.value || undefined)}/>
           </ListItem>
           <ListItem key="dollarsPerPoint">
             <FormLabel>Dollars per point</FormLabel>
-            <FormInput type="number" pattern="[0-9]\." value={settings.dollarsPerPoint}
-                       onChange={(event) => this.handleSettingChange('dollarsPerPoint', event.target.value)}/>
+            <FormInput type="text" pattern="[0-9]\." value={settings.dollarsPerPoint} className="number"
+                       onChange={(event) => this.handleSettingChange('dollarsPerPoint', +event.target.value || undefined)}/>
           </ListItem>
           <ListItem key="doublesOnWolf">
             <FormLabel>Doubles on wolf/pig</FormLabel>

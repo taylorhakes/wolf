@@ -214,9 +214,9 @@ class Scorecard extends Component {
             <FormInput type="number" pattern="[0-9]*" onChange={(event) => this.props.onExtraPointsChange({
               id: this.props.game.id,
               hole: this.props.selectedHole,
-              extraPoints: +event.target.value || 0,
+              extraPoints: +event.target.value || undefined,
             })}
-                       placeholder="Enter score" value={this.props.game.extraPoints[this.props.selectedHole] || 0}
+                       placeholder="0" value={this.props.game.extraPoints[this.props.selectedHole]}
             />
           </ListItem>
         </List>
