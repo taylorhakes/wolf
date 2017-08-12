@@ -54,7 +54,8 @@ class GameSettings extends Component {
       });
     };
     this.handleCreateGame = () => {
-      this.props.onSaveGame({...this.props.settings, id: Date.now()});
+      const date = Date.now()
+      this.props.onSaveGame({...this.props.settings, id: date, date: date});
     };
 
     this.handlePlayerRemove = () => {

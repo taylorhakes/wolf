@@ -4,14 +4,34 @@ import {connect} from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {playerInfo} from '../../utils';
 import {updateHole, nextHole, updatePartners, selectHole, pageChange, changeDollars,
-  updateExtraPoints} from '../../action_creators';
+  updateExtraPoints, shareGame, loadShared } from '../../action_creators';
 import Select from '../select';
 import Switch from '../switch';
+
+const firebase = window.firebase;
+
+function uuidv4() {
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  )
+}
+
 
 class Scorecard extends Component {
   constructor(props) {
     super(props);
 
+    this.handleShare = () => {
+      if (!this.props.game.share && confirm('Do you want to share this game? It will be public to anyone with a link.')) {
+        this.props.onShareGame({
+          oldId: this.props.game.id,
+          newId: uuidv4()
+        });
+      } else {
+        alert(`Copy the following url and text/email.  http://wolf.golf?game=${this.props.game.id}`);
+      }
+
+    };
     this.handlePigChange = (checked) => {
 
       this.props.onPartnersChange({
@@ -41,6 +61,24 @@ class Scorecard extends Component {
 
    this.handleBack = () => this.props.pageChange('main')
   }
+  componentDidUpdate(prevProps) {
+    if (!prevProps.share && this.props.share) {
+      alert(`Copy the following url and text/email.  http://wolf.golf?game=${this.props.game.id}`);
+    }
+  }
+  componentDidMount() {
+    if (this.props.game.readOnly) {
+      firebase.database().ref(`/games/${this.props.game.id}`).on('value', (snapshot) => {
+        this.props.loadShared({...JSON.parse(snapshot.val()), readOnly: true});
+      });
+    }
+  }
+  componentWillUnmount() {
+    if (this.props.game.readOnly) {
+      firebase.database().ref(`/games/${this.props.game.id}`).off();
+    }
+  }
+
   renderScoreCard() {
     const headers = [];
 
@@ -185,6 +223,7 @@ class Scorecard extends Component {
             </a>
           </NavLeft>
           <NavRight>
+            <i className="f7-icons" style={{marginRight: 50}} onClick={this.handleShare}>share</i>
             $&nbsp;<Switch onChange={this.handleChangeDollars} checked={this.props.useDollars} />
           </NavRight>
         </Navbar>
@@ -249,6 +288,8 @@ const mapDispatchToProps = dispatch => {
     onPartnersChange: updatePartners,
     onChangeDollars: changeDollars,
     onExtraPointsChange: updateExtraPoints,
+    onShareGame: shareGame,
+    loadShared,
     pageChange,
 
   }, dispatch);

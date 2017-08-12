@@ -1,8 +1,11 @@
+
+
+
 export default function(state={}, action) {
   let game;
   switch (action.type) {
     case 'NEW_GAME':
-      game = {...action.payload, partners: [], extraPoints: []};
+      game = {...action.payload, partners: [], extraPoints: [], share: false};
       game.players =  game.playerNames.map((name, index) => ({
         name,
         order: index,
@@ -58,6 +61,15 @@ export default function(state={}, action) {
         prev[id] = state[id];
         return prev;
       }, {});
+    case 'SHARE_GAME':
+      game = {...state[action.payload.oldId], share: true, id: action.payload.newId};
+      const games = {...state};
+      delete games[action.payload.oldId];
+      games[game.id] = game;
+      return games;
+    case 'LOAD_SHARED':
+      game = action.payload;
+      return {...state, [game.id]: game};
     default:
       return state;
   }

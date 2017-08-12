@@ -10,6 +10,8 @@ import selectGame from './select_game';
 import changeDollars from './change_dollars'
 import deleteGame from './delete_game';
 import updateExtraPoints from './update_extra_points';
+import shareGame from './share_game';
+import loadShared from './load_shared';
 
 export {
   newGame,
@@ -23,5 +25,7 @@ export {
   selectGame,
   changeDollars,
   deleteGame,
-  updateExtraPoints
+  updateExtraPoints,
+  shareGame,
+  loadShared
 };
