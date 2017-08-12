@@ -5,7 +5,7 @@ export default function(state={}, action) {
   let game;
   switch (action.type) {
     case 'NEW_GAME':
-      game = {...action.payload, partners: [], extraPoints: [], share: false};
+      game = {...action.payload, partners: [], partnerDetails: [], extraPoints: [], share: false};
       game.players =  game.playerNames.map((name, index) => ({
         name,
         order: index,
@@ -42,7 +42,7 @@ export default function(state={}, action) {
       const partner = +action.payload.selectedPartner;
       if (partner === -1) {
         game.partners[action.payload.hole] = [action.payload.wolf];
-      } else if (partner == -2) {
+      } else if (partner === -2) {
         game.partners[action.payload.hole] = [];
       } else {
         if (action.payload.pig) {
@@ -51,8 +51,9 @@ export default function(state={}, action) {
           game.partners[action.payload.hole] = [action.payload.wolf, partner];
         }
       }
-      game.partners[action.payload.hole].selectedPartner = action.payload.selectedPartner;
-      game.partners[action.payload.hole].pig = action.payload.pig;
+      game.partnerDetails[action.payload.hole] = {};
+      game.partnerDetails[action.payload.hole].selectedPartner = action.payload.selectedPartner;
+      game.partnerDetails[action.payload.hole].pig = action.payload.pig;
 
       return {...state, [game.id]: game};
 

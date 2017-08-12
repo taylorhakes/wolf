@@ -37,7 +37,7 @@ class Main extends Component {
   renderGames() {
     return this.props.games.map((game) => (
       <ListItem swipeout key={game.id} onClick={this.props.onSelectGame.bind(null, game.id)}
-                title={moment(+game.date).format("MMM Do, YYYY") +  game.readOnly ? ' (View only)' : ''}>
+                title={moment(+game.date).format("MMM Do, YYYY") +  (game.readOnly ? ' (View only)' : '')}>
         <ListItemSwipeoutActions>
           {/*<ListItemSwipeoutButton close color="blue">Edit</ListItemSwipeoutButton>*/}
           <ListItemSwipeoutButton color="red" onClick={this.handleDelete.bind(null, game.id)}>Delete</ListItemSwipeoutButton>

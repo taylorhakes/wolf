@@ -92,7 +92,7 @@ export function playerInfo(game, hole, useDollars) {
   }
 
   let scoreList;
-  if (hole + players.length <= 18) {
+  if (4 - (hole % players.length) + hole <= 17) {
     const firstPlayer = (hole) % players.length;
     scoreList = [];
     for (let j = 0; j < players.length; j++) {
@@ -104,17 +104,34 @@ export function playerInfo(game, hole, useDollars) {
       });
     }
   } else {
-    scoreList = players.sort().sort((a,b) => {
-      if (a == b) {
-        return 0;
-      }
+    scoreList = players.slice()
+      .map((player, index) => {
+        let total = 0;
+        for (let k = 0; k < hole; k++) {
+          const holeScore = scoresByHole[index][k];
+          if (holeScore) {
+            total += holeScore
+          }
+        }
 
-      return a < b ? -1 : 1;
-    }).map((player, index) => ({
-      player,
-      score: scores[index],
-      scoresByHole: scoresByHole[index]
-    }));
+        return {
+          player,
+          previousScore: total,
+          score: scores[index],
+          index
+        };
+      })
+      .sort((a,b) => {
+        if (a.previousScore == b.previousScore) {
+          return 0;
+        }
+
+        return a.previousScore < b.previousScore ? -1 : 1;
+      }).map((info, index) => ({
+        player: info.player,
+        score: info.score,
+        scoresByHole: scoresByHole[info.index]
+      }));
   }
 
   return {

@@ -38,8 +38,8 @@ class Scorecard extends Component {
         id: this.props.game.id,
         hole: this.props.selectedHole,
         wolf: this.props.scoreInfo[0].player.order,
-        selectedPartner: (this.props.game.partners[this.props.selectedHole] ?
-          this.props.game.partners[this.props.selectedHole].selectedPartner : -2),
+        selectedPartner: (this.props.game.partnerDetails[this.props.selectedHole] ?
+          +this.props.game.partnerDetails[this.props.selectedHole].selectedPartner : -2),
         pig: checked
       });
     };
@@ -48,8 +48,8 @@ class Scorecard extends Component {
         id: this.props.game.id,
         hole: this.props.selectedHole,
         wolf: this.props.scoreInfo[0].player.order,
-        selectedPartner: event.target.value,
-        pig: !!(this.props.game.partners[this.props.selectedHole] && this.props.game.partners[this.props.selectedHole].pig)
+        selectedPartner: +event.target.value,
+        pig: !!(this.props.game.partnerDetails[this.props.selectedHole] && this.props.game.partnerDetails[this.props.selectedHole].pig)
       });
     };
 
@@ -235,7 +235,7 @@ class Scorecard extends Component {
         <List>
           <ListItem>
             <FormLabel>Partner</FormLabel>
-            <Select value={this.props.game.partners[this.props.selectedHole] ? this.props.game.partners[this.props.selectedHole].selectedPartner : -2}
+            <Select value={this.props.game.partnerDetails[this.props.selectedHole] ? this.props.game.partnerDetails[this.props.selectedHole].selectedPartner : '-2'}
                     onChange={this.handlePartnerChange}>
               <option value="-2" key="-2">Select Partner</option>
               {this.renderPartners()}
@@ -246,7 +246,7 @@ class Scorecard extends Component {
             <FormLabel>Pig</FormLabel>
             <Switch
               onChange={this.handlePigChange}
-              checked={this.props.game.partners[this.props.selectedHole] ? this.props.game.partners[this.props.selectedHole].pig : false}/>
+              checked={this.props.game.partnerDetails[this.props.selectedHole] ? this.props.game.partnerDetails[this.props.selectedHole].pig : false}/>
           </ListItem>
           <ListItem >
             <FormLabel><span>Extra points to winning team</span></FormLabel>
