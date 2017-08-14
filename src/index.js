@@ -20,6 +20,7 @@ import { createStore, compose, applyMiddleware } from 'redux';
 import persistState from 'redux-localstorage'
 import queryString from 'query-string';
 import loadShared from './action_creators/load_shared';
+import selectGame from './action_creators/select_game';
 
 const composeEnhancers =
   typeof window === 'object' &&
@@ -55,8 +56,15 @@ const parsed = queryString.parse(location.search);
 if (parsed.game) {
   const newGame = parsed.game;
   firebase.database().ref(`/games/${newGame}`).once('value').then(function(snapshot) {
-    store.dispatch(loadShared({...JSON.parse(snapshot.val()), readOnly: true}));
+    const gameJson = snapshot.val();
     history.replaceState(null, null, '/');
+    if (gameJson) {
+      const game = JSON.parse(gameJson);
+      store.dispatch(loadShared({...game, readOnly: true}));
+      store.dispatch(selectGame(game.id));
+    } else {
+      alert('Could not load shared games. Please check the link and try again.')
+    }
   });
 }
 

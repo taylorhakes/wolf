@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Page, Navbar, NavRight, Link, NavLeft, Card, CardHeader, CardContent, ContentBlockTitle, FormSwitch, List, ListItem, FormLabel, FormInput, Button, GridCol, GridRow, ContentBlock, ButtonsSegmented} from 'framework7-react';
+import {Page, Navbar, NavRight, Link, NavLeft, Popup, Card, CardHeader, CardContent, ContentBlockTitle, FormSwitch, List, ListItem, FormLabel, FormInput, Button, GridCol, GridRow, ContentBlock, ButtonsSegmented} from 'framework7-react';
 import {connect} from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {playerInfo} from '../../utils';
@@ -27,8 +27,8 @@ class Scorecard extends Component {
           oldId: this.props.game.id,
           newId: uuidv4()
         });
-      } else {
-        alert(`Copy the following url and text/email.  http://wolf.golf?game=${this.props.game.id}`);
+      } else if(this.props.game.share) {
+        prompt('Copy the following and text/email to other players.',  `http://wolf.golf?game=${this.props.game.id}`);
       }
 
     };
@@ -62,8 +62,8 @@ class Scorecard extends Component {
    this.handleBack = () => this.props.pageChange('main')
   }
   componentDidUpdate(prevProps) {
-    if (!prevProps.share && this.props.share) {
-      alert(`Copy the following url and text/email.  http://wolf.golf?game=${this.props.game.id}`);
+    if (!prevProps.game.share && this.props.game.share) {
+      prompt('Copy the following url and text/email.',  `http://wolf.golf?game=${this.props.game.id}`);
     }
   }
   componentDidMount() {
@@ -77,6 +77,20 @@ class Scorecard extends Component {
     if (this.props.game.readOnly) {
       firebase.database().ref(`/games/${this.props.game.id}`).off();
     }
+  }
+
+  getPartnerName() {
+    const partnerDetails = this.props.game.partnerDetails[this.props.selectedHole];
+    if (partnerDetails) {
+      if (partnerDetails.selectedPartner === -1) {
+        return 'Lone Wolf';
+      }
+
+
+      return this.props.game.players[partnerDetails.selectedPartner].name + (partnerDetails.pig ? ' (PIG)' : '');
+    }
+
+    return 'No partner selected';
   }
 
   renderScoreCard() {
@@ -182,23 +196,36 @@ class Scorecard extends Component {
     )
   }
   renderScoreInputs() {
-    const items = this.props.scoreInfo.map((info, index) => {
-      return (
-        <ListItem key={info.player.order}>
-          <FormLabel><span>{info.player.name}: {this.props.useDollars ? '$' : ''}{info.score}{index == 0 ? ' (Wolf)': ''}</span></FormLabel>
-          <FormInput type="number" pattern="[0-9]*"
-                     value={info.player.scores[this.props.selectedHole] || ''}
-                     onChange={(event) => this.props.onHoleChange({
-                       id: this.props.game.id,
-                       hole: this.props.selectedHole,
-                       score: +event.target.value,
-                       order: info.player.order
-                   })}
-                     placeholder="Enter score"
-          />
-        </ListItem>
-      )
-    });
+    let items;
+    if (this.props.game.readOnly) {
+      items = this.props.scoreInfo.map((info, index) => {
+        return (
+          <ListItem key={info.player.order}>
+            <FormLabel><span>{info.player.name}: {this.props.useDollars ? '$' : ''}{info.score}{index == 0 ? ' (Wolf)': ''}</span></FormLabel>
+            <FormLabel><div style={{textAlign: 'right'}}>{info.player.scores[this.props.selectedHole] || 'No score yet'}</div></FormLabel>
+          </ListItem>
+        )
+      });
+    } else {
+      items = this.props.scoreInfo.map((info, index) => {
+        return (
+          <ListItem key={info.player.order}>
+            <FormLabel><span>{info.player.name}: {this.props.useDollars ? '$' : ''}{info.score}{index == 0 ? ' (Wolf)': ''}</span></FormLabel>
+            <FormInput type="number" pattern="[0-9]*"
+                       value={info.player.scores[this.props.selectedHole] || ''}
+                       onChange={(event) => this.props.onHoleChange({
+                         id: this.props.game.id,
+                         hole: this.props.selectedHole,
+                         score: +event.target.value,
+                         order: info.player.order
+                       })}
+                       placeholder="Enter score"
+            />
+          </ListItem>
+        )
+      });
+    }
+
 
     return (
       <List>
@@ -207,10 +234,55 @@ class Scorecard extends Component {
     )
   }
 
+  renderSelectPartners() {
+    if (this.props.game.readOnly) {
+      return (<FormLabel><div>{this.getPartnerName()}</div></FormLabel>)
+    }
+
+    return (
+      <Select value={this.props.game.partnerDetails[this.props.selectedHole] ? this.props.game.partnerDetails[this.props.selectedHole].selectedPartner : '-2'}
+              onChange={this.handlePartnerChange}>
+        <option value="-2" key="-2">Select Partner</option>
+        {this.renderPartners()}
+        <option value="-1" key="-1">Lone Wolf</option>
+      </Select>
+    )
+  }
+
   renderPartners() {
     return this.props.scoreInfo.slice(1).map((scoreInfo) => (
       <option key={scoreInfo.player.order} value={scoreInfo.player.order}>{scoreInfo.player.name}</option>
     ));
+  }
+
+  renderPig() {
+    if (this.props.game.readOnly) {
+      return null;
+    }
+
+    return (
+      <ListItem>
+        <FormLabel>Pig</FormLabel>
+        <Switch
+          onChange={this.handlePigChange}
+          checked={this.props.game.partnerDetails[this.props.selectedHole] ? this.props.game.partnerDetails[this.props.selectedHole].pig : false}/>
+      </ListItem>
+    );
+  }
+
+  renderExtraPoints() {
+    if (this.props.game.readOnly) {
+      return <FormLabel><span>{this.props.game.extraPoints[this.props.selectedHole] || '0'}</span></FormLabel>
+    }
+    return (
+      <FormInput type="number" pattern="[0-9]*" onChange={(event) => this.props.onExtraPointsChange({
+        id: this.props.game.id,
+        hole: this.props.selectedHole,
+        extraPoints: +event.target.value || undefined,
+      })}
+                 placeholder="0" value={this.props.game.extraPoints[this.props.selectedHole]}
+      />
+    )
   }
 
   render() {
@@ -230,33 +302,17 @@ class Scorecard extends Component {
         <div className="data-table">
           {this.renderScoreCard()}
         </div>
-        <ContentBlockTitle><span>Hole {this.props.selectedHole + 1}: <strong>{this.props.points} Point</strong></span></ContentBlockTitle>
+        <ContentBlockTitle><span>Hole {this.props.selectedHole + 1} Order: <strong>{this.props.points} Point{this.props.points > 1 ? 's' : ''}</strong></span></ContentBlockTitle>
         {this.renderScoreInputs()}
         <List>
           <ListItem>
-            <FormLabel>Partner</FormLabel>
-            <Select value={this.props.game.partnerDetails[this.props.selectedHole] ? this.props.game.partnerDetails[this.props.selectedHole].selectedPartner : '-2'}
-                    onChange={this.handlePartnerChange}>
-              <option value="-2" key="-2">Select Partner</option>
-              {this.renderPartners()}
-              <option value="-1" key="-1">Lone Wolf</option>
-            </Select>
+            <FormLabel>Wolf Partner</FormLabel>
+            {this.renderSelectPartners()}
           </ListItem>
-          <ListItem>
-            <FormLabel>Pig</FormLabel>
-            <Switch
-              onChange={this.handlePigChange}
-              checked={this.props.game.partnerDetails[this.props.selectedHole] ? this.props.game.partnerDetails[this.props.selectedHole].pig : false}/>
-          </ListItem>
+          {this.renderPig()}
           <ListItem >
             <FormLabel><span>Extra points to winning team</span></FormLabel>
-            <FormInput type="number" pattern="[0-9]*" onChange={(event) => this.props.onExtraPointsChange({
-              id: this.props.game.id,
-              hole: this.props.selectedHole,
-              extraPoints: +event.target.value || undefined,
-            })}
-                       placeholder="0" value={this.props.game.extraPoints[this.props.selectedHole]}
-            />
+            {this.renderExtraPoints()}
           </ListItem>
         </List>
         <ContentBlock inner>

@@ -58,7 +58,7 @@ export default function(state={}, action) {
       return {...state, [game.id]: game};
 
     case 'DELETE_GAME':
-      return Object.keys(state).filter((id) => +id !== +action.payload).reduce((prev, id) => {
+      return Object.keys(state).filter((id) => id !== ('' + action.payload)).reduce((prev, id) => {
         prev[id] = state[id];
         return prev;
       }, {});

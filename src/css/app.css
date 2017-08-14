@@ -1,3 +1,26 @@
+.modal {
+    width: 270px;
+    position: absolute;
+    z-index: 13500;
+    left: 50%;
+    margin-left: -135px;
+    margin-top: 0;
+    top: 50%;
+    text-align: center;
+    border-radius: 13px;
+    overflow: hidden;
+    opacity: 0;
+    -webkit-transform: translate3d(0,0,0) scale(1.185);
+    transform: translate3d(0,0,0) scale(1.185);
+    -webkit-transition-property: -webkit-transform,opacity;
+    -moz-transition-property: -moz-transform,opacity;
+    -ms-transition-property: -ms-transform,opacity;
+    -o-transition-property: -o-transform,opacity;
+    transition-property: transform,opacity;
+    color: #000;
+    display: none;
+}
+
 .navbar {
     position: absolute;
 }

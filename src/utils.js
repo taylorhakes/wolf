@@ -19,7 +19,7 @@ export function playerInfo(game, hole, useDollars) {
   const scores = newFilledArray(players.length, 0);
   const scoresByHole = newFilledArray(players.length, () => []);
   const pointsByHole = [];
-  for (let i = 0; i < hole + 1; i++) {
+  for (let i = 0; i < 18; i++) {
     pointsByHole[i] = points;
 
     let lowestScorers = [];
