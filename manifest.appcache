@@ -1,0 +1,18 @@
+CACHE MANIFEST
+
+CACHE:
+/
+/css/framework7-icons.css
+/js/firebase-4.2.0.js
+/static/js/bundle.js
+/fonts/Framework7Icons-Regular.woff2
+
+# Use from network if available
+NETWORK:
+/
+/css/framework7-icons.css
+/static/js/bundle.js
+/js/firebase-4.2.0.js
+/fonts/Framework7Icons-Regular.woff2
+
+
