@@ -69,7 +69,7 @@ const AppConnnect = connect(
 
 export default () => (
 	//Change themeType to "material" to use the Material theme
-	<Framework7App themeType="material">
+	<Framework7App themeType="material" fastClicks={false}>
 		<AppConnnect />
 	</Framework7App>  
 );

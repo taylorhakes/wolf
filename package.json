@@ -22,8 +22,9 @@
   },
   "homepage": "http://wolf.golf",
   "scripts": {
+    "build-manifest": "./src/build_manifest.js",
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && npm run build-manifest",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
